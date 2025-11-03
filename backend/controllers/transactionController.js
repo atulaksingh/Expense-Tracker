@@ -8,8 +8,10 @@ exports.getTransactions = async (req, res) => {
 
     if (type) filter.type = type;
     if (category) filter.category = category;
-    if (startDate && endDate) {
-      filter.date = { $gte: new Date(startDate), $lte: new Date(endDate) };
+    if (startDate || endDate) {
+      filter.date = {};
+      if (startDate) filter.date.$gte = new Date(startDate);
+      if (endDate) filter.date.$lte = new Date(endDate);
     }
 
     const transactions = await Transaction.find(filter).sort({ date: -1 });

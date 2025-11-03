@@ -1,35 +1,51 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
+import { fetchTransactions } from "./transactions/transactionSlice";
+import TransactionForm from "./components/TransactionForm";
+import TransactionList from "./components/TransactionList";
+import ExpenseChart from "./components/ExpenseChart";
+import SummaryCard from "./components/SummaryCard";
+import FilterBar from "./components/FilterBar";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const dispatch = useDispatch();
+  const [filters, setFilters] = useState({});
 
+  useEffect(() => {
+    dispatch(fetchTransactions(filters));
+  }, [dispatch, filters]);
+  const applyFilters = (f) => {
+    const clean = {
+      type: f.type || undefined,
+      category: f.category || undefined,
+      startDate: f.startDate || undefined,
+      endDate: f.endDate || undefined,
+    };
+    setFilters(clean);
+  };
+
+  const clearFilters = () => {
+    setFilters({});
+  };
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <div className=" mx-auto p-4">
+      <h1 className="text-3xl font-bold text-center mb-6 text-blue-700">
+     
+        Expense Tracker
+      </h1>
+      <div className="grid grid-cols-2 mb-4">
+        <div>
+          <TransactionForm />
+          <FilterBar onApply={applyFilters} onClear={clearFilters} />
+          <SummaryCard />
+          <ExpenseChart />
+        </div>
+        <div>
+          <TransactionList />
+        </div>
       </div>
-      <h1 className='text-red-600'>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    </div>
+  );
 }
 
-export default App
+export default App;
